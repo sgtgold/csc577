@@ -8,12 +8,13 @@ import java.util.Properties;
 /**
  * Created by rburke on 12/5/2016.
  */
+
+
 public class Driver {
 
     // Change this to load a different configuration file.
-    //public static String CONFIG_FILE = "conf/naive-bayes.properties";
-    //public static String CONFIG_FILE = "conf/slim.properties";
-    public static String CONFIG_FILE = "conf/mac-time-svd.properties";
+    //public static String CONFIG_FILE = "conf/mac-time-svd.properties";
+    public static String CONFIG_FILE = "conf/time-svd.properties";
 
     public static void main(String[] args) throws Exception {
         Configuration conf = new Configuration();
