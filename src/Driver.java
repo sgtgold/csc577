@@ -14,7 +14,7 @@ public class Driver {
 
     // Change this to load a different configuration file.
     //public static String CONFIG_FILE = "conf/mac-time-svd.properties";
-    public static String CONFIG_FILE = "conf/time-svd.properties";
+    public static String CONFIG_FILE = "conf/time-svd-med.properties";
 
     public static void main(String[] args) throws Exception {
         Configuration conf = new Configuration();
