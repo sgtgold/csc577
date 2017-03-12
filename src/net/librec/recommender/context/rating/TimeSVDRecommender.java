@@ -45,12 +45,12 @@ public class TimeSVDRecommender extends BiasedMFRecommender {
     /**
      * the span of hours of rating timestamps
      */
-    private static int numDays;
+    private static int numHours;
 
     /**
      * {user, mean date}
      */
-    private DenseVector userMeanDate;
+    private DenseVector userMeanHour;
 
     /**
      * time decay factor
@@ -149,7 +149,7 @@ public class TimeSVDRecommender extends BiasedMFRecommender {
         timeMatrix = (SparseMatrix) getDataModel().getDatetimeDataSet();
         getMaxAndMinTimeStamp();
 
-        numDays = hours(maxTimestamp, minTimestamp) + 1;
+        numHours = hours(maxTimestamp, minTimestamp) + 1;
 
         userBiases = new DenseVector(numUsers);
         userBiases.init();
@@ -175,7 +175,7 @@ public class TimeSVDRecommender extends BiasedMFRecommender {
         Cu = new DenseVector(numUsers);
         Cu.init();
 
-        Cut = new DenseMatrix(numUsers, numDays);
+        Cut = new DenseMatrix(numUsers, numHours);
         Cut.init();
 
         cacheSpec = conf.get("guava.cache.spec", "maximumSize=200,expireAfterAccess=2m");
@@ -186,7 +186,7 @@ public class TimeSVDRecommender extends BiasedMFRecommender {
         P.init();
         Q.init();
 
-        // global average date
+        // global average time
         double sum = 0;
         int cnt = 0;
         for (MatrixEntry me : trainMatrix) {
@@ -203,7 +203,7 @@ public class TimeSVDRecommender extends BiasedMFRecommender {
         double globalMeanDate = sum / cnt;
 
         // compute user's mean of rating timestamps
-        userMeanDate = new DenseVector(numUsers);
+        userMeanHour = new DenseVector(numUsers);
         List<Integer> Ru = null;
         for (int u = 0; u < numUsers; u++) {
 
@@ -218,7 +218,7 @@ public class TimeSVDRecommender extends BiasedMFRecommender {
             }
 
             double mean = (Ru.size() > 0) ? (sum + 0.0) / Ru.size() : globalMeanDate;
-            userMeanDate.set(u, mean);
+            userMeanHour.set(u, mean);
             //System.out.println(u);
         }
     }
@@ -448,7 +448,7 @@ public class TimeSVDRecommender extends BiasedMFRecommender {
      * @return the time deviation for a specific timestamp t w.r.t the mean date tu
      */
     private double dev(int userId, int t) {
-        double tu = userMeanDate.get(userId);
+        double tu = userMeanHour.get(userId);
 
         // date difference in hours
         double diff = t - tu;
@@ -463,7 +463,7 @@ public class TimeSVDRecommender extends BiasedMFRecommender {
      * @return the bin number (starting from 0..numBins-1) for a specific timestamp t;
      */
     private int bin(int day) {
-        return (int) (day / (numDays + 0.0) * numBins);
+        return (int) (day / (numHours + 0.0) * numBins);
     }
 
     /**
