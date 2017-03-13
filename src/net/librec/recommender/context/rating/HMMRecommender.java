@@ -155,7 +155,7 @@ public class HMMRecommender extends AbstractRecommender {
             double totalNumberOfStateChanges = 0;
             for(int s3 = 0; s3 < numStates - 1; s3++)
             {
-                for(int s4 = 1; s4 < numStates - 2; s4++)
+                for(int s4 = 0; s4 < numStates - 1; s4++)
                 {
                     if(favArtistForState[s3] != favArtistForState[s4])
                     {
@@ -170,7 +170,7 @@ public class HMMRecommender extends AbstractRecommender {
 
             for(int s7 = numStates - 1; s7 > 0; s7--)
             {
-                for(int s8 = numStates - 2; s8 > 1; s8--)
+                for(int s8 = numStates - 1; s8 > 0; s8--)
                 {
                     if(favArtistForState[s7] != favArtistForState[s8])
                     {
@@ -183,7 +183,7 @@ public class HMMRecommender extends AbstractRecommender {
 
             for(int s5 = 0; s5 < numStates - 1; s5++)
             {
-                for(int s6 = 0; s6 < numStates - 2; s6++)
+                for(int s6 = 0; s6 < numStates - 1; s6++)
                 {
                     if(totalNumberOfStateChanges != 0)
                     {
@@ -196,7 +196,7 @@ public class HMMRecommender extends AbstractRecommender {
             }
             for(int s9 = numStates - 1; s9 > 0; s9--)
             {
-                for(int s10 = numStates - 2; s10 > 1; s10--)
+                for(int s10 = numStates - 1; s10 > 0; s10--)
                 {
                     if(favArtistForState[s9] != favArtistForState[s10])
                     {
