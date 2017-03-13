@@ -112,10 +112,11 @@ public class HMMRecommender extends AbstractRecommender {
             //Loop through items
             //User Level aggregates
             double [][] stateCounts = new double[numUsers][numStates];
+            double [] favArtistForState = new double[numStates];
             for (int i = 0; i < numItems; i++) {
                 //Item level aggregates
-                double favArtistForState = 0.0;
-                double userItemStateTotal = 0.0;
+
+                //double userItemStateTotal = 0.0;
                 //Loop through states
                 for (int s = 0; s < numStates; s++) {
                     final int u1 = u;
@@ -126,31 +127,87 @@ public class HMMRecommender extends AbstractRecommender {
                         Iterator<UserItemStateCount> userStateItr = userItemStateCounts.stream().filter(x -> x.getUser() == u1 && x.getState() == s1).iterator();
                         while (userStateItr.hasNext()) {
                             UserItemStateCount uisc = userStateItr.next();
-                            if (favArtistForState < uisc.getCount()) {
-                                favArtistForState = uisc.getCount();
+                            if (favArtistForState[s] < uisc.getCount()) {
+                                favArtistForState[s] = uisc.getCount();
                             }
-                            userItemStateTotal += uisc.getCount();
                             stateCounts[u][s] = uisc.getCount();
                         }
                     }
                 }
-                //Calculate Item level percentages
-                if(userItemStateTotal > 0.0)
-                {
-                    double initStateProb =  favArtistForState/userItemStateTotal;
-                }
             }
-            //Initial State Probabilities
-            if(stateCounts[u].length > 0) {
+            //Initial State Probabilities DO NOT DELETE
+          /*  if(stateCounts[u].length > 0) {
                 double total = 0.0;
                 for (int s1 = 0; s1 < stateCounts[u].length  ; s1++) {
                     total += stateCounts[u][s1];
                 }
                 if (total > 0.0) {
                     for (int s2 = 0; s2 < stateCounts[u].length  ; s2++) {
-                        double statePercent = 0.0;
-                        statePercent = stateCounts[u][s2] / total;
-                        System.out.println("User: "+ u +" State: " + s2 + " Percent: " + statePercent);
+                        double initialState;
+                        initialState = stateCounts[u][s2] / total;
+                        System.out.println("User: "+ u +" State: " + s2 + " Percent: " + initialState);
+                    }
+                }
+            }*/
+            //End Initial State
+            //forward state changes
+            double[][] stateChangeMatrix = new double[numStates][numStates-1];
+            double totalNumberOfStateChanges = 0;
+            for(int s3 = 0; s3 < numStates - 1; s3++)
+            {
+                for(int s4 = 1; s4 < numStates - 2; s4++)
+                {
+                    if(favArtistForState[s3] != favArtistForState[s4])
+                    {
+                        stateChangeMatrix[s3][s4] = 1.0;
+                        totalNumberOfStateChanges++;
+                    }
+                }
+
+
+            }
+            //backwards state changes
+
+            for(int s7 = numStates - 1; s7 > 0; s7--)
+            {
+                for(int s8 = numStates - 2; s8 > 1; s8--)
+                {
+                    if(favArtistForState[s7] != favArtistForState[s8])
+                    {
+                        stateChangeMatrix[s7][s8] = 1.0;
+                        totalNumberOfStateChanges++;
+                    }
+                }
+            }
+
+
+            for(int s5 = 0; s5 < numStates - 1; s5++)
+            {
+                for(int s6 = 0; s6 < numStates - 2; s6++)
+                {
+                    if(totalNumberOfStateChanges != 0)
+                    {
+                        System.out.println("User: "+ u +" State_1: " + s5 +" State_2: " + s6 + " Probability: " + (stateChangeMatrix[s5][s6] / totalNumberOfStateChanges) );
+                    }
+                    else {
+                        System.out.println("User: " + u + " State_1: " + s5 + " State_2: " + s6 + " Probability: " + 0.0);
+                    }
+                }
+            }
+            for(int s9 = numStates - 1; s9 > 0; s9--)
+            {
+                for(int s10 = numStates - 2; s10 > 1; s10--)
+                {
+                    if(favArtistForState[s9] != favArtistForState[s10])
+                    {
+                        stateChangeMatrix[s9][s10] = 1.0;
+                        if(totalNumberOfStateChanges != 0)
+                        {
+                            System.out.println("User: "+ u +" State_1: " + s9 +" State_2: " + s10 + " Probability: " + (stateChangeMatrix[s9][s10] / totalNumberOfStateChanges) );
+                        }
+                        else {
+                            System.out.println("User: " + u + " State_1: " + s9 + " State_2: " + s10 + " Probability: " + 0.0);
+                        }
                     }
                 }
             }
